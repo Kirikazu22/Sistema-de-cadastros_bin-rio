@@ -65,7 +65,7 @@ void insert(){
  //inserir um dado
 }
 
-void delete(){
+void delet(){
  //deletar um dado
 }
 
