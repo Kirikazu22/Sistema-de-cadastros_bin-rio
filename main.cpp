@@ -78,14 +78,12 @@ void selectionSort(Data vetor[], int tam){
     }
 }
 
-void insert(Data *data, int size){
+//Corrigir
+void update(Data *data, int size){
     ofstream baseBin("base16_OK.bin", ios::binary);
     
-
+        
         for(int i = 0; i < size; i++) {
-            // É uma biblioteca que permite trabalhar com strings de forma mais fácil, permitindo que você leia a string como uma linha de arquivo 
-           
-
             // Armazena a informação da struct Data no arquivo binário
             baseBin.write(reinterpret_cast<char*>(&data[i]), sizeof(Data));
         }
@@ -93,12 +91,54 @@ void insert(Data *data, int size){
         baseBin.close();
 }
 
-void deletar(){
+//Corrigir
+//delete
+void remove(Data *data, int size){
+    int num;
 
+    cin >> num;
+
+    if(num < size){
+        while(num < size){
+            data[num] = data[num+1];
+        }
+    }else{
+        data[num].first[0] = '\0';
+        data[num].second = NULL;
+        data[num].third[0] = '\0';
+        data[num].fourth = NULL;
+        data[num].fifth = NULL;
+    }
 }
 
-void showTable(Data readData, int size){
+//Corrigir
+void insert(Data *data, int size){
+    int num;
+    
+    Data *novadata = new Data[size+1];
+    copy(data,data+size,novadata);
+
+    cout << "Digite uma string" << endl;
+    cin >> novadata[size].first;
+    cout << "Digite um numero" << endl;
+    cin >> novadata[size].second;
+    cout << "Digite uma string" << endl;
+    cin >> novadata[size].third;
+    cout << "Digite um numero" << endl;
+    cin >> novadata[size].fourth;
+    cout << "Digite um numero" << endl;
+    cin >> novadata[size].fifth;
+
+    //atualiza o tamanho do vetor
+    //size++;
+    
+    //update(novadata, size);
+}
+
+void showTable(int size){
+    Data readData;
     int aux = 0;
+
     ifstream baseBin("base16_OK.bin", ios_base::binary);
     Data *data = new Data[size];
 
@@ -119,7 +159,8 @@ void showTable(Data readData, int size){
 }
 
 void showMenu(){
-    cout << "\n\t\t\tSISTEMA DE CADASTROS\n\n1-Inserir\t\t2-Deletar\t\t3-Imprimir\n4-Ordenar por preco\t5-Ordenar por nome\t0-Sair\n";
+    cout << "\n\t\t  ----------------------\n\t\t  |SISTEMA DE CADASTROS|\n\t\t  ----------------------\n\n";
+    cout << "1-Inserir\t\t2-Deletar\t       3-Imprimir\n4-Ordenar por preco\t5-Ordenar por nome     0-Sair\n";
 }
 
 int main(void) {
@@ -150,7 +191,6 @@ int main(void) {
             
             cout << "Array de dados gerado com sucesso, pode comecar os filtros" << endl;
             // A PARTIR DAQUI É POSSÍVEL APLICAR OS FILTROS NO ARRAY DATA!
-            
 
         //INTERFACE
             int selector;
@@ -160,38 +200,35 @@ int main(void) {
                        
                 cin >> selector;
 
+                system("cls");
+
                 switch (selector){
                     //inserir
                     case 1:
-                
-                
+                        insert(data, size);
                     //deletar
                     case 2:
-
-                
+                        remove(data, size);
                     //imprimir
                     case 3:
-                        showTable(readData, size);
-                
+                        showTable(size);
                     //ordenar 1
                     case 4:
                         selectionSort(data, size);
-                        insert(data, size);
+                        update(data, size);
                 
                     //ordenar 2
-                    case 5:
+//                    case 5:
 
                 
                     //erros
                     default:
                     
-
+cout<<"";
                     };
 
                 //limpar da tela e voltar para função inicial
             }while(selector != 0);
-
-
 
         } else {
             cout << "Erro ao abrir base.bin" << endl;
