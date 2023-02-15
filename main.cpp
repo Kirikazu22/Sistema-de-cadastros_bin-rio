@@ -78,25 +78,43 @@ void selectionSort(Data vetor[], int tam){
     }
 }
 
-//Corrigir
+void selectionSort_2(Data vetor[], int tam){
+    int menor; 
+    Data a;
+
+    for (int indice = 0; indice < tam-1; indice++) {
+   	 menor = indice;
+   	 for (int j = indice + 1; j < tam; j++) {
+   		 if (vetor[j].fourth < vetor[menor].fourth){
+   			 menor = j;
+   		 }
+   	 }
+   	 a = vetor[indice];
+   	 vetor[indice] = vetor[menor];
+   	 vetor[menor] = a;
+    }
+}
+
+
+//Corrigir//
 void update(Data *data, int size){
     ofstream baseBin("base16_OK.bin", ios::binary);
     
-        
         for(int i = 0; i < size; i++) {
-            // Armazena a informação da struct Data no arquivo binário
+            // Armazena a informação da struct Data no arquivo binário / Não está funcionando
             baseBin.write(reinterpret_cast<char*>(&data[i]), sizeof(Data));
         }
 
         baseBin.close();
 }
 
-//Corrigir
 //delete
 void remove(Data *data, int size){
     int num;
 
     cin >> num;
+
+    num--;
 
     if(num < size){
         while(num < size){
@@ -109,9 +127,12 @@ void remove(Data *data, int size){
         data[num].fourth = NULL;
         data[num].fifth = NULL;
     }
+
+    size--;
 }
 
-//Corrigir
+
+//Corrigir//
 void insert(Data *data, int size){
     int num;
     
@@ -130,9 +151,9 @@ void insert(Data *data, int size){
     cin >> novadata[size].fifth;
 
     //atualiza o tamanho do vetor
-    //size++;
+    size++;
     
-    //update(novadata, size);
+    update(novadata, size);
 }
 
 void showTable(int size){
@@ -148,11 +169,12 @@ void showTable(int size){
     }
     
     for(int i = 0; i < size; i++){
+        cout << i+1 << " - \t";
         cout << data[i].first << endl;
-        cout << data[i].second << endl;
-        cout << data[i].third << endl;
-        cout << data[i].fourth << endl;
-        cout << data[i].fifth << endl;
+        cout << "\t" << data[i].second << endl;
+        cout << "\t" << data[i].third << endl;
+        cout << "\t" << data[i].fourth << endl;
+        cout << "\t" << data[i].fifth << endl;
     }
 
     baseBin.close();
@@ -192,43 +214,39 @@ int main(void) {
             cout << "Array de dados gerado com sucesso, pode comecar os filtros" << endl;
             // A PARTIR DAQUI É POSSÍVEL APLICAR OS FILTROS NO ARRAY DATA!
 
-        //INTERFACE
+        //INTERFACE - Corrigir
             int selector;
             
-            do{         
+            while(selector != 0){       
                 showMenu();
                        
                 cin >> selector;
 
                 system("cls");
 
-                switch (selector){
                     //inserir
-                    case 1:
+                    if(selector == 1){
                         insert(data, size);
+                        //depois de ler o insert 
                     //deletar
-                    case 2:
+                    }else if(selector == 2){
                         remove(data, size);
+                        update(data, size);
                     //imprimir
-                    case 3:
+                    }else if(selector == 3){
                         showTable(size);
-                    //ordenar 1
-                    case 4:
+                    //ordenar 1 = Ordena pelo quarto campo(tipo float)
+                    }else if(selector == 4){
                         selectionSort(data, size);
                         update(data, size);
-                
-                    //ordenar 2
-//                    case 5:
-
-                
-                    //erros
-                    default:
+                    //ordenar 2 = Ordena pelo primeiro campo(tipo char[])
+                    }else if(selector == 5){
                     
-cout<<"";
-                    };
-
-                //limpar da tela e voltar para função inicial
-            }while(selector != 0);
+                    //erros
+                    }else{
+                        //Correção de erros
+                    }
+            }
 
         } else {
             cout << "Erro ao abrir base.bin" << endl;
