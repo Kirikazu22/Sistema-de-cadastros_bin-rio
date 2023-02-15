@@ -122,10 +122,10 @@ void remove(Data *data, int size){
         }
     }else{
         data[num].first[0] = '\0';
-        data[num].second = NULL;
+        data[num].second = 0;
         data[num].third[0] = '\0';
-        data[num].fourth = NULL;
-        data[num].fifth = NULL;
+        data[num].fourth = 0;
+        data[num].fifth = 0;
     }
 
     size--;
@@ -134,7 +134,6 @@ void remove(Data *data, int size){
 
 //Corrigir//
 void insert(Data *data, int size){
-    int num;
     
     Data *novadata = new Data[size+1];
     copy(data,data+size,novadata);
