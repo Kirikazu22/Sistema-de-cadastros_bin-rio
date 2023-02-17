@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <regex>
+#include <vector>
  
 using namespace std;
 
@@ -28,7 +29,6 @@ void generateBin() {
             stringstream linestream(aux);
             string cell;
             Data data;
-
             // O getLine lê as informações da linestream, que recebeu os dados de aux do arquivo binário, até encontrar o ; e armazena em cell
             // Após a leitura, pelo o que eu entendi, ela passa o ponteiro para o próximo caracter delimitador
             getline(linestream, cell, ';');
@@ -61,127 +61,121 @@ void generateBin() {
     } else cout << "Nao foi possivel abrir o arquivo base.csv" << endl;
 }
 
-void selectionSort(Data vetor[], int tam){
-    int menor; 
-    Data a;
-
-    for (int indice = 0; indice < tam-1; indice++) {
-   	 menor = indice;
-   	 for (int j = indice + 1; j < tam; j++) {
-   		 if (vetor[j].fourth < vetor[menor].fourth){
-   			 menor = j;
-   		 }
-   	 }
-   	 a = vetor[indice];
-   	 vetor[indice] = vetor[menor];
-   	 vetor[menor] = a;
-    }
-}
-
-void selectionSort_2(Data vetor[], int tam){
-    int menor; 
-    Data a;
-
-    for (int indice = 0; indice < tam-1; indice++) {
-   	 menor = indice;
-   	 for (int j = indice + 1; j < tam; j++) {
-   		 if (vetor[j].fourth < vetor[menor].fourth){
-   			 menor = j;
-   		 }
-   	 }
-   	 a = vetor[indice];
-   	 vetor[indice] = vetor[menor];
-   	 vetor[menor] = a;
-    }
-}
-
-
-//Corrigir//
+//Atualiza o arquivo bin com o vetor recebido
 void update(Data *data, int size){
-    ofstream baseBin("base16_OK.bin", ios::binary);
-    
-        for(int i = 0; i < size; i++) {
-            // Armazena a informação da struct Data no arquivo binário / Não está funcionando
-            baseBin.write(reinterpret_cast<char*>(&data[i]), sizeof(Data));
+    ofstream fileCsv("base16_OK.csv", ios_base::in);
+
+    if(fileCsv.is_open()){
+        for (int i = 0; i < size; i++) {
+            Data dataActual = data[i];
+
+            fileCsv << dataActual.first << ";" << dataActual.second << ";" << dataActual.third << ";" << dataActual.fourth << ";" << dataActual.fifth << "\n";
         }
 
-        baseBin.close();
+        generateBin();
+        
+    } else cout << "Erro ao atualizar o arquivo base16_OK.csv";
 }
 
-//delete
+int busca(Data *data, int size){
+    int i = 0, K = 0, posicao = -1;
+    
+    while (i < size) {
+   	 if (data[i].second == K){
+   		 posicao = i;
+   	 }
+   	 i++;
+    }
+    return posicao;
+}
+
+//Deleta posições do vetor
 void remove(Data *data, int size){
     int num;
-
+	
+	cout << "Digite o id do cadastro que voce quer apagar" << endl;
     cin >> num;
 
-    num--;
-
-    if(num < size){
-        while(num < size){
-            data[num] = data[num+1];
-        }
-    }else{
-        data[num].first[0] = '\0';
-        data[num].second = 0;
-        data[num].third[0] = '\0';
-        data[num].fourth = 0;
-        data[num].fifth = 0;
-    }
+    data[num-1].first[0] = '\0';
+    data[num-1].second = 0;
+    data[num-1].third[0] = '\0';
+    data[num-1].fourth = 0;
+    data[num-1].fifth = 0;
 
     size--;
-}
+    update(data, size);
+}	
 
-
-//Corrigir//
+//Inserir dados
 void insert(Data *data, int size){
     
     Data *novadata = new Data[size+1];
     copy(data,data+size,novadata);
 
+	size++;
+	
+	//Procurar disponibilidade do vetor
+	
+	int out = busca(novadata, size);
+	
     cout << "Digite uma string" << endl;
-    cin >> novadata[size].first;
+    cin >> novadata[out].first;
     cout << "Digite um numero" << endl;
-    cin >> novadata[size].second;
+    cin >> novadata[out].second;
     cout << "Digite uma string" << endl;
-    cin >> novadata[size].third;
+    cin >> novadata[out].third;
     cout << "Digite um numero" << endl;
-    cin >> novadata[size].fourth;
+    cin >> novadata[out].fourth;
     cout << "Digite um numero" << endl;
-    cin >> novadata[size].fifth;
-
+    cin >> novadata[out].fifth;
+	
+	
+	delete [] data;
     //atualiza o tamanho do vetor
-    size++;
-    
     update(novadata, size);
 }
 
-void showTable(int size){
-    Data readData;
-    int aux = 0;
-
-    ifstream baseBin("base16_OK.bin", ios_base::binary);
-    Data *data = new Data[size];
-
-    while (baseBin.read(reinterpret_cast<char*>(&readData), sizeof(Data))) {
-        data[aux] = readData;   
-        aux++;
-    }
-    
+//Imprimir as posições do vetor
+void showTable(Data *data, int size){
+    //cout << i+1 aumenta as posições para que elas comecem em 1 e 
+    //terminem em 1000 
     for(int i = 0; i < size; i++){
-        cout << i+1 << " - \t";
-        cout << data[i].first << endl;
-        cout << "\t" << data[i].second << endl;
-        cout << "\t" << data[i].third << endl;
-        cout << "\t" << data[i].fourth << endl;
-        cout << "\t" << data[i].fifth << endl;
+		if(data[i].second != 0){
+			cout << i+1 << " - \t";
+			cout << data[i].first << endl;
+			cout << "\t" << data[i].second << endl;
+			cout << "\t" << data[i].third << endl;
+			cout << "\t" << data[i].fourth << endl;
+			cout << "\t" << data[i].fifth << endl;
+		}
     }
-
-    baseBin.close();
 }
 
+//Imprimir posições selecionadas do vetor
+void showpartTable(Data *data, int size){
+	int start, end;
+	cout << "Digite a primeira posicao da impressao" << endl;
+	cin >> start;
+	cout << "Digite a ultima posicao da impressao" << endl;
+	cin >> end;
+	system("cls");
+    // "start - 1" garante que todas as posições digitadas sejam impressas
+    for(int i = start-1; i < end; i++){
+		if(data[i].second != 0){
+			cout << i+1 << " - \t";
+			cout << data[i].first << endl;
+			cout << "\t" << data[i].second << endl;
+			cout << "\t" << data[i].third << endl;
+			cout << "\t" << data[i].fourth << endl;
+			cout << "\t" << data[i].fifth << endl;
+		}
+    }
+}
+
+//Imprime o Menu
 void showMenu(){
     cout << "\n\t\t  ----------------------\n\t\t  |SISTEMA DE CADASTROS|\n\t\t  ----------------------\n\n";
-    cout << "1-Inserir\t\t2-Deletar\t       3-Imprimir\n4-Ordenar por preco\t5-Ordenar por nome     0-Sair\n";
+    cout << "1-Inserir\t2-Deletar\t\t3-Imprimir parte do codigo\n4-Imprimir\t5-Ordenar por float\t6-Ordenar por long\n0-Sair\n";
 }
 
 int main(void) {
@@ -195,8 +189,7 @@ int main(void) {
         int size = 0;
         while (baseBin.read(reinterpret_cast<char*>(&readData), sizeof(Data))) size++;
 
-        // To fechando o arquivo pois com o metodo seekg não funciona
-        // Juliana disse que vai me ajudar a encontrar o error
+        // Fechando o arquivo pois com o metodo seekg não funciona
         baseBin.close();
         baseBin.open("base16_OK.bin", ios_base::binary);
 
@@ -213,37 +206,38 @@ int main(void) {
             cout << "Array de dados gerado com sucesso, pode comecar os filtros" << endl;
             // A PARTIR DAQUI É POSSÍVEL APLICAR OS FILTROS NO ARRAY DATA!
 
-        //INTERFACE - Corrigir
+        //INTERFACE
             int selector;
             
             while(selector != 0){       
                 showMenu();
                        
                 cin >> selector;
-
-                system("cls");
+				system("cls");
 
                     //inserir
                     if(selector == 1){
                         insert(data, size);
-                        //depois de ler o insert 
                     //deletar
                     }else if(selector == 2){
                         remove(data, size);
-                        update(data, size);
-                    //imprimir
+                    //imprimir um trecho
                     }else if(selector == 3){
-                        showTable(size);
-                    //ordenar 1 = Ordena pelo quarto campo(tipo float)
+                        showpartTable(data, size);
+                    //imprimir
                     }else if(selector == 4){
-                        selectionSort(data, size);
-                        update(data, size);
-                    //ordenar 2 = Ordena pelo primeiro campo(tipo char[])
+						showTable(data, size);
+                    //ordenar 1 = Ordena pelo quarto campo(tipo float)
                     }else if(selector == 5){
-                    
-                    //erros
+						
+                        update(data, size);
+                    //ordenar 2 = Ordena pelo segundo campo(tipo long)
+                    }else if(selector == 6){
+						
+						update(data, size);
+                        //Correção de erros	
                     }else{
-                        //Correção de erros
+                        //Correção de erros	
                     }
             }
 
